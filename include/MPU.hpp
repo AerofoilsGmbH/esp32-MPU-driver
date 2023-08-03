@@ -29,6 +29,9 @@
 #include "esp_err.h"
 #include "sdkconfig.h"
 
+#include <stdio.h>
+#define ICM_REG_DEBUG 1
+
 #ifdef CONFIG_MPU_I2C
 #if !defined I2CBUS_COMPONENT_TRUE
 #error ''MPU component requires I2Cbus library. \
@@ -100,6 +103,10 @@ class MPU
     uint16_t getSampleRate();
     clock_src_t getClockSource();
     dlpf_t getDigitalLowPassFilter();
+#if defined CONFIG_ICM20948    
+    dlpf_t getAccelDigitalLowPassFilter();
+    esp_err_t setAccelSampleRate(float rate);
+#endif
     //! \}
     //! \name Power management
     //! \{
@@ -204,7 +211,7 @@ class MPU
     esp_err_t setFsyncEnabled(bool enable);
     int_lvl_t getFsyncConfig();
     bool getFsyncEnabled();
-#if defined CONFIG_MPU6500 || defined CONFIG_MPU9250
+#if defined CONFIG_MPU6500 || defined CONFIG_MPU9250 || CONFIG_ICM20948
     esp_err_t setFchoice(fchoice_t fchoice);
     fchoice_t getFchoice();
 #endif
@@ -216,6 +223,22 @@ class MPU
     //! \name Read / Write
     //! Functions to perform direct read or write operation(s) to registers.
     //! \{
+    #if defined CONFIG_ICM20948
+    bool icm_reg_debug_enabled = false;
+    void setIcmRegDebug( bool enable );
+    esp_err_t selectRegBank( uint8_t bank );
+    esp_err_t readBit(uint16_t regAddr, uint8_t bitNum, uint8_t* data);
+    esp_err_t readBits(uint16_t regAddr, uint8_t bitStart, uint8_t length, uint8_t* data);
+    esp_err_t readByte(uint16_t regAddr, uint8_t* data);
+    esp_err_t readBytes(uint16_t regAddr, size_t length, uint8_t* data);
+    esp_err_t writeBit(uint16_t regAddr, uint8_t bitNum, uint8_t data);
+    esp_err_t writeBits(uint16_t regAddr, uint8_t bitStart, uint8_t length, uint8_t data);
+    esp_err_t writeByte(uint16_t regAddr, uint8_t data);
+    esp_err_t writeBytes(uint16_t regAddr, size_t length, const uint8_t* data);
+    esp_err_t registerDump(uint8_t bank = 0x0, uint8_t start = 0x0, uint8_t end = 0x7F);
+    
+    #else
+
     esp_err_t readBit(uint8_t regAddr, uint8_t bitNum, uint8_t* data);
     esp_err_t readBits(uint8_t regAddr, uint8_t bitStart, uint8_t length, uint8_t* data);
     esp_err_t readByte(uint8_t regAddr, uint8_t* data);
@@ -225,6 +248,9 @@ class MPU
     esp_err_t writeByte(uint8_t regAddr, uint8_t data);
     esp_err_t writeBytes(uint8_t regAddr, size_t length, const uint8_t* data);
     esp_err_t registerDump(uint8_t start = 0x0, uint8_t end = 0x7F);
+        
+    #endif
+    
     //! \}
     //! \name Sensor readings
     //! \{
@@ -314,6 +340,124 @@ inline esp_err_t MPU::lastError()
 {
     return err;
 }
+
+#if defined CONFIG_ICM20948          
+
+#ifdef ICM_REG_DEBUG  
+inline void MPU::setIcmRegDebug( bool enable ) {
+    icm_reg_debug_enabled = enable;
+}
+
+#endif
+
+static uint16_t  ICM20948_BANK = 0xFF;
+
+inline esp_err_t MPU::selectRegBank( uint8_t bank )
+{
+    if( ICM20948_BANK != bank ) {
+#ifdef ICM_REG_DEBUG   
+      if( icm_reg_debug_enabled ) printf("SEL BANK 0x%02X\n", bank);
+#endif
+      err = bus->writeByte(addr, ICM20948_REG_BANK_SEL, bank);
+      if( err ) return err;
+      uint8_t  bank_r;
+      err = bus->readByte(addr, ICM20948_REG_BANK_SEL, &bank_r);
+      if( err ) return err;
+      if( bank != bank_r ) {
+        printf("ERROR ");
+      }
+      ICM20948_BANK = bank;
+    }
+    return 0;
+}
+
+/*! Read a single bit from a register*/
+inline esp_err_t MPU::readBit(uint16_t regAddr, uint8_t bitNum, uint8_t* data)
+{
+    if( MPU::selectRegBank( regAddr >> 8 ) ) return err;
+    err = bus->readBit(addr, (uint8_t) regAddr, bitNum, data);
+#ifdef ICM_REG_DEBUG     
+    if( icm_reg_debug_enabled ) printf("readBit (0x%02X %d) 0x%02X\n", (uint8_t)regAddr, (unsigned int)bitNum, (unsigned int)*data);
+#endif  
+    return err;    
+}
+/*! Read a range of bits from a register */
+inline esp_err_t MPU::readBits(uint16_t regAddr, uint8_t bitStart, uint8_t length, uint8_t* data)
+{
+    if( MPU::selectRegBank( regAddr >> 8 ) ) return err;   
+    err = bus->readBits(addr, (uint8_t) regAddr, bitStart, length, data);
+#ifdef ICM_REG_DEBUG      
+    if( icm_reg_debug_enabled ) printf("readBits (0x%02X %d-%d) 0x%02X\n", (uint8_t)regAddr, (unsigned int)bitStart, (unsigned int)length, (unsigned int)*data);
+#endif  
+    return err;
+}
+/*! Read a single register */
+inline esp_err_t MPU::readByte(uint16_t regAddr, uint8_t* data)
+{
+    if( MPU::selectRegBank( regAddr >> 8 ) ) return err;
+    err = bus->readByte(addr, (uint8_t) regAddr, data);
+#ifdef ICM_REG_DEBUG      
+    if( icm_reg_debug_enabled ) printf("readByte (0x%02X) 0x%02X\n", (uint8_t)regAddr, (unsigned int)*data);
+#endif      
+    return err;
+}
+/*! Read data from sequence of registers */
+inline esp_err_t MPU::readBytes(uint16_t regAddr, size_t length, uint8_t* data)
+{
+    if( MPU::selectRegBank( regAddr >> 8 ) ) return err;
+    err = bus->readBytes(addr, (uint8_t) regAddr, length, data);
+#ifdef ICM_REG_DEBUG  
+if( icm_reg_debug_enabled ) {     
+    printf("readBytes (0x%02X x%d) ", (uint8_t)regAddr, length);
+    for( int i=0; i < length; i++ ) printf("0x%02X ",(unsigned int)data[i]);
+    printf("\n");
+}
+#endif      
+    return err;    
+}
+/*! Write a single bit to a register */
+inline esp_err_t MPU::writeBit(uint16_t regAddr, uint8_t bitNum, uint8_t data)
+{   
+    if( MPU::selectRegBank( regAddr >> 8 ) ) return err;
+#ifdef ICM_REG_DEBUG  
+    if( icm_reg_debug_enabled ) printf("writeBit (0x%02X %d) 0x%02X\n", (uint8_t)regAddr, (unsigned int)bitNum, (unsigned int)data);
+#endif      
+    return err = bus->writeBit(addr, (uint8_t) regAddr, bitNum, data);
+}
+/*! Write a range of bits to a register */
+inline esp_err_t MPU::writeBits(uint16_t regAddr, uint8_t bitStart, uint8_t length, uint8_t data)
+{  
+    if( MPU::selectRegBank( regAddr >> 8 ) ) return err;
+#ifdef ICM_REG_DEBUG  
+    if( icm_reg_debug_enabled ) printf("writeBits (0x%02X %d-%d) 0x%02X\n", (uint8_t)regAddr, (unsigned int)bitStart, (unsigned int)length, (unsigned int)data);
+#endif      
+    return err = bus->writeBits(addr, (uint8_t) regAddr, bitStart, length, data);
+}
+/*! Write a value to a register */
+inline esp_err_t MPU::writeByte(uint16_t regAddr, uint8_t data)
+{
+    if( MPU::selectRegBank( regAddr >> 8 ) ) return err;
+#ifdef ICM_REG_DEBUG      
+    if( icm_reg_debug_enabled ) printf("writeByte (0x%02X) 0x%02X\n", (uint8_t)regAddr, (unsigned int)data);
+#endif      
+    return err = bus->writeByte(addr, (uint8_t) regAddr, data);
+}
+/*! Write a sequence to data to a sequence of registers */
+inline esp_err_t MPU::writeBytes(uint16_t regAddr, size_t length, const uint8_t* data)
+{
+    if( MPU::selectRegBank( regAddr >> 8 ) ) return err;
+#ifdef ICM_REG_DEBUG   
+if( icm_reg_debug_enabled ) {  
+    printf("writeBytes (0x%02X x%d) ", (uint8_t)regAddr, length);
+    for( int i=0; i < length; i++ ) printf("0x%02X ",(unsigned int)data[i]);
+    printf("\n"); 
+}
+#endif         
+    return err = bus->writeBytes(addr, (uint8_t) regAddr, length, data);
+}
+
+#else
+
 /*! Read a single bit from a register*/
 inline esp_err_t MPU::readBit(uint8_t regAddr, uint8_t bitNum, uint8_t* data)
 {
@@ -354,6 +498,9 @@ inline esp_err_t MPU::writeBytes(uint8_t regAddr, size_t length, const uint8_t* 
 {
     return err = bus->writeBytes(addr, regAddr, length, data);
 }
+
+#endif
+
 
 }  // namespace mpud
 

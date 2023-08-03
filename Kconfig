@@ -50,6 +50,8 @@ config MPU9250
     bool "MPU9250"
 config MPU9255
     bool "MPU9255"
+config ICM20948
+    bool "ICM20948"
 
 endchoice
 
@@ -63,12 +65,13 @@ config MPU_CHIP_MODEL
     default "MPU9150" if MPU9150
     default "MPU9250" if MPU9250
     default "MPU9255" if MPU9255
+    default "ICM20948" if ICM20948
 
 
 config MPU_AK8963
     bool
     default "y"
-    depends on MPU9250 || MPU9255
+    depends on MPU9250 || MPU9255 || ICM20948
 
 config MPU_AK8975
     bool
@@ -94,7 +97,7 @@ config MPU_I2C
         
 config MPU_SPI
     bool "SPI"
-    depends on MPU6000 || MPU6500 || MPU6555 || MPU9250 || MPU9255
+    depends on MPU6000 || MPU6500 || MPU6555 || MPU9250 || MPU9255 || ICM20948
     help
         Serial Peripheral Interface bus (SPI)
 

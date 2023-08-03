@@ -27,6 +27,7 @@
 #define MPU_LOGW(format, ...) if (CONFIG_MPU_LOG_LEVEL >= ESP_LOG_WARN)    { ESP_LOGW(TAG, format, ##__VA_ARGS__); }
 #define MPU_LOGI(format, ...) if (CONFIG_MPU_LOG_LEVEL >= ESP_LOG_INFO)    { ESP_LOGI(TAG, format, ##__VA_ARGS__); }
 #define MPU_LOGD(format, ...) if (CONFIG_MPU_LOG_LEVEL >= ESP_LOG_DEBUG)   { ESP_LOGD(TAG, format, ##__VA_ARGS__); }
+
 #define MPU_LOGV(format, ...) if (CONFIG_MPU_LOG_LEVEL >= ESP_LOG_VERBOSE) { ESP_LOGV(TAG, format, ##__VA_ARGS__); }
 
 #define MPU_LOGEMSG(msg, format, ...) MPU_LOGE("%s()-> %s" format, __FUNCTION__, msg, ##__VA_ARGS__)

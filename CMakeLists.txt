@@ -14,6 +14,8 @@ component_compile_options(PUBLIC -DMPU_COMPONENT_TRUE=1)
 # MPU6555 equals MPU6500, MPU9255 equals MPU9250
 if(${CONFIG_MPU_CHIP_MODEL} STREQUAL "MPU9250")
     component_compile_options(PUBLIC -DCONFIG_MPU6500)
+elseif (${CONFIG_MPU_CHIP_MODEL} STREQUAL "ICM20948")
+    component_compile_options(PUBLIC -DCONFIG_MPU6500)
 elseif (${CONFIG_MPU_CHIP_MODEL} STREQUAL "MPU9150")
     component_compile_options(PUBLIC -DCONFIG_MPU6050)
 elseif (${CONFIG_MPU_CHIP_MODEL} STREQUAL "MPU6000")

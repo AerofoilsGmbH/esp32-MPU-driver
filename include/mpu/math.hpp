@@ -96,7 +96,7 @@ inline float_axes_t gyroRadPerSec(const raw_axes_t& raw_axes, const gyro_fs_t fs
     return axes;
 }
 
-#if defined CONFIG_MPU6500 || defined CONFIG_MPU9250
+#if defined CONFIG_MPU6500 || defined CONFIG_MPU9250 || CONFIG_ICM20948
 constexpr int16_t kRoomTempOffset = 0;        // LSB
 constexpr float kCelsiusOffset    = 21.f;     // ºC
 constexpr float kTempSensitivity  = 333.87f;  // LSB/ºC

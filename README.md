@@ -24,6 +24,7 @@ Supports both SPI and I2C protocols interchangeably, selectable bus port, and ev
 | **[MPU9150]** | Gyro/Accel/Compass | _I2C_        |
 | **[MPU9250]** | Gyro/Accel/Compass | _I2C_, _SPI_ |
 |  **MPU9255**  | Gyro/Accel/Compass | _I2C_, _SPI_ |
+| **ICM20948**  | Gyro/Accel/Compass | _I2C_, _SPI_ |
 
 [MPU6000]: https://www.invensense.com/products/motion-tracking/6-axis/mpu-6050/
 [MPU6050]: https://www.invensense.com/products/motion-tracking/6-axis/mpu-6050/
@@ -74,11 +75,10 @@ SPIbus:  git clone https://github.com/natanaeljr/esp32-SPIbus.git SPIbus
 
 ## Installation
 
-Download the repository [here](https://github.com/natanaeljr/esp32-MPU-driver/archive/master.zip),
-or clone it right into your project components directory with the following command.
+Download the repository, or clone it right into your project components directory with the following command.
 
 ```
-git clone https://github.com/natanaeljr/esp32-MPU-driver.git MPUdriver
+git clone https://github.com/poadoc/esp32-MPU-driver
 ```
 
 This way you can easily update the library with `git pull` whenever a update is available.
@@ -165,11 +165,5 @@ The API provides many other functions to manage and operate the sensor in its fu
 See [MPU Unit Test] for more information.
 
 [MPU Unit Test]: test/README.md
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-Copyright © 2017-2018, Natanael Josue Rabello [_natanael.rabello@outlook.com_]
 
 ---

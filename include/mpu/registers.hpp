@@ -22,7 +22,427 @@ namespace mpud
 namespace regs
 {
 /*******************************************************************************
- * MPU commom registers for all models
+ * ICM-20948 registers
+ ******************************************************************************/
+#if defined CONFIG_ICM20948
+
+#define ICM20948_REG_BANK_SEL   0x7F
+
+#define ICM20948_BANK_0         (0 << 12)     /* Register bank 0 */
+#define ICM20948_BANK_1         (1 << 12)     /* Register bank 1 */
+#define ICM20948_BANK_2         (2 << 12)     /* Register bank 2 */
+#define ICM20948_BANK_3         (3 << 12)     /* Register bank 3 */
+
+constexpr uint16_t WHO_AM_I    = (ICM20948_BANK_0 | 0x00);
+
+//------------------------------------------------------------------------------
+// MPU common registers for all models Compatible Section
+//------------------------------------------------------------------------------
+
+constexpr uint16_t XG_OFFSET_H = (ICM20948_BANK_2 | 0x03);
+constexpr uint16_t XG_OFFSET_L = (ICM20948_BANK_2 | 0x04);
+constexpr uint16_t YG_OFFSET_H = (ICM20948_BANK_2 | 0x05);
+constexpr uint16_t YG_OFFSET_L = (ICM20948_BANK_2 | 0x06);
+constexpr uint16_t ZG_OFFSET_H = (ICM20948_BANK_2 | 0x07);
+constexpr uint16_t ZG_OFFSET_L = (ICM20948_BANK_2 | 0x08);
+constexpr uint16_t SMPLRT_DIV  = (ICM20948_BANK_2 | 0x00);  // [7:0]
+
+constexpr uint16_t ACCEL_SMPLRT_DIV_H  = (ICM20948_BANK_2 | 0x10);  // [11:8]
+constexpr uint16_t ACCEL_SMPLRT_DIV_L  = (ICM20948_BANK_2 | 0x11);  // [7:0]
+
+//------------------------------------------------------------------------------
+constexpr uint16_t GYRO_CONFIG                = (ICM20948_BANK_2 | 0x01);
+constexpr uint16_t CONFIG_DLPF_CFG_BIT        = (5);  // [5:3]
+constexpr uint16_t CONFIG_DLPF_CFG_LENGTH     = (3);
+
+constexpr uint16_t GCONFIG_FS_SEL_BIT       = (2);  // [2:1]
+constexpr uint16_t GCONFIG_FS_SEL_LENGTH    = (2);
+
+constexpr uint16_t GCONFIG_FCHOICE_B        = (0);  // [0:0]
+constexpr uint16_t GCONFIG_FCHOICE_B_LENGTH = (1);
+
+//------------------------------------------------------------------------------
+constexpr uint16_t GYRO_CONFIG_2            = (ICM20948_BANK_2 | 0x02);
+constexpr uint16_t GCONFIG_XG_ST_BIT        = (5);
+constexpr uint16_t GCONFIG_YG_ST_BIT        = (4);
+constexpr uint16_t GCONFIG_ZG_ST_BIT        = (3);
+//------------------------------------------------------------------------------
+
+constexpr uint16_t FIFO_MODE                  = (ICM20948_BANK_0 | 0x69);
+constexpr uint16_t CONFIG_FIFO_MODE_BIT       = (4);
+constexpr uint16_t CONFIG_FIFO_MODE_BIT_LENGTH= (5);
+
+constexpr uint16_t FSYNC_CONFIG               = (ICM20948_BANK_2 | 0x52);
+constexpr uint16_t CONFIG_EXT_SYNC_SET_BIT    = (3);  // [3:0]
+constexpr uint16_t CONFIG_EXT_SYNC_SET_LENGTH = (4);
+
+//------------------------------------------------------------------------------
+constexpr uint16_t ACCEL_CONFIG                   = (ICM20948_BANK_2 | 0x14);
+constexpr uint16_t ACONFIG_A_DLPF_CFG_BIT         = (5);  // [5:3]
+constexpr uint16_t ACONFIG_A_DLPF_CFG_LENGTH      = (3);
+constexpr uint16_t ACONFIG_FS_SEL_BIT             = (2);  // [2:1]
+constexpr uint16_t ACONFIG_FS_SEL_LENGTH          = (2);  
+constexpr uint16_t ACONFIG_ACCEL_FCHOICE_B_BIT    = (0); // [0:0]
+constexpr uint16_t ACONFIG_ACCEL_FCHOICE_B_LENGTH = (1);
+
+//constexpr uint16_t ACONFIG_HPF_BIT       = (1);  // [1:0]     // UNKNOWN
+//constexpr uint16_t ACONFIG_HPF_LENGTH    = (2);               // UNKNOWN
+
+constexpr uint16_t ACCEL_CONFIG_2        = (ICM20948_BANK_2 | 0x15);
+constexpr uint16_t ACONFIG_XA_ST_BIT     = (4);
+constexpr uint16_t ACONFIG_YA_ST_BIT     = (3);
+constexpr uint16_t ACONFIG_ZA_ST_BIT     = (2);
+                                                                          
+//constexpr uint16_t ACONFIG2_FIFO_SIZE_BIT       = (7);  // [7:6]   //UNKNOWN
+//constexpr uint16_t ACONFIG2_FIFO_SIZE_LENGTH    = (2);            // UNKNOWN
+
+
+//------------------------------------------------------------------------------
+constexpr uint16_t FF_THR       = (0x1D);                      // UNKNOWN
+constexpr uint16_t FF_DUR       = (0x1E);                      // UNKNOWN
+constexpr uint16_t MOTION_THR   = (ICM20948_BANK_2 | 0x13);  // [7:0] // MPU9250_REG_WOM_THR
+constexpr uint16_t MOTION_DUR   = (0x20);                     // UNKNOWN
+constexpr uint16_t ZRMOTION_THR = (0x21);                     // UNKNOWN
+constexpr uint16_t ZRMOTION_DUR = (0x22);                     // UNKNOWN
+//------------------------------------------------------------------------------
+constexpr uint16_t FIFO_EN           = (ICM20948_BANK_0 | 0x66);
+constexpr uint16_t FIFO_SLV_3_EN_BIT = (3);
+constexpr uint16_t FIFO_SLV_2_EN_BIT = (2);
+constexpr uint16_t FIFO_SLV_1_EN_BIT = (1);
+constexpr uint16_t FIFO_SLV_0_EN_BIT = (0);
+
+constexpr uint16_t FIFO_EN_1         = (ICM20948_BANK_0 | 0x67);
+constexpr uint16_t FIFO_TEMP_EN_BIT  = (8+0);
+constexpr uint16_t FIFO_XGYRO_EN_BIT = (8+1);
+constexpr uint16_t FIFO_YGYRO_EN_BIT = (8+2);
+constexpr uint16_t FIFO_ZGYRO_EN_BIT = (8+3);
+constexpr uint16_t FIFO_ACCEL_EN_BIT = (8+4);
+
+//------------------------------------------------------------------------------
+constexpr uint16_t I2C_MST_CTRL                  = (ICM20948_BANK_3 | 0x01);
+constexpr uint16_t I2CMST_CTRL_MULT_EN_BIT       = (7);
+
+constexpr uint16_t I2CMST_CTRL_WAIT_FOR_ES_BIT   = (6);   // UNKNOWN
+constexpr uint16_t I2CMST_CTRL_SLV_3_FIFO_EN_BIT = (5);   // UNKNOWN
+
+constexpr uint16_t I2CMST_CTRL_P_NSR_BIT         = (4);
+constexpr uint16_t I2CMST_CTRL_CLOCK_BIT         = (3);  // [3:0]
+constexpr uint16_t I2CMST_CTRL_CLOCK_LENGTH      = (4);
+//------------------------------------------------------------------------------
+constexpr uint16_t I2C_SLV0_ADDR     = (ICM20948_BANK_3 | 0x03);
+constexpr uint16_t I2C_SLV_RNW_BIT   = (7);  // same for all I2C_SLV registers
+constexpr uint16_t I2C_SLV_ID_BIT    = (6);  // [6:0]
+constexpr uint16_t I2C_SLV_ID_LENGTH = (7);
+//------------------------------------------------------------------------------
+constexpr uint16_t I2C_SLV0_REG = (ICM20948_BANK_3 | 0x04);  // [7:0]
+//------------------------------------------------------------------------------
+constexpr uint16_t I2C_SLV0_CTRL       = (ICM20948_BANK_3 | 0x05);
+constexpr uint16_t I2C_SLV_EN_BIT      = (7);  // same for all I2C_SLV registers
+constexpr uint16_t I2C_SLV_BYTE_SW_BIT = (6);
+constexpr uint16_t I2C_SLV_REG_DIS_BIT = (5);
+constexpr uint16_t I2C_SLV_GRP_BIT     = (4);
+constexpr uint16_t I2C_SLV_LEN_BIT     = (3);  // [3:0]
+constexpr uint16_t I2C_SLV_LEN_LENGTH  = (4);
+//------------------------------------------------------------------------------
+constexpr uint16_t I2C_SLV1_ADDR = (ICM20948_BANK_3 | 0x07);  // see SLV0 for bit defines
+constexpr uint16_t I2C_SLV1_REG  = (ICM20948_BANK_3 | 0x08);
+constexpr uint16_t I2C_SLV1_CTRL = (ICM20948_BANK_3 | 0x09);
+constexpr uint16_t I2C_SLV2_ADDR = (ICM20948_BANK_3 | 0x0B);  // see SLV0 for bit defines
+constexpr uint16_t I2C_SLV2_REG  = (ICM20948_BANK_3 | 0x0C);
+constexpr uint16_t I2C_SLV2_CTRL = (ICM20948_BANK_3 | 0x0D);
+constexpr uint16_t I2C_SLV3_ADDR = (ICM20948_BANK_3 | 0x0F);  // see SLV0 for bit defines
+constexpr uint16_t I2C_SLV3_REG  = (ICM20948_BANK_3 | 0x10);
+constexpr uint16_t I2C_SLV3_CTRL = (ICM20948_BANK_3 | 0x11);
+constexpr uint16_t I2C_SLV4_ADDR = (ICM20948_BANK_3 | 0x13);  // see SLV0 for bit defines
+constexpr uint16_t I2C_SLV4_REG  = (ICM20948_BANK_3 | 0x14);
+constexpr uint16_t I2C_SLV4_DO   = (ICM20948_BANK_3 | 0x16);  // [7:0]
+//------------------------------------------------------------------------------
+constexpr uint16_t I2C_SLV4_CTRL             = (ICM20948_BANK_3 | 0x15);
+constexpr uint16_t I2C_SLV4_EN_BIT           = (7);
+constexpr uint16_t I2C_SLV4_DONE_INT_BIT     = (6);
+constexpr uint16_t I2C_SLV4_REG_DIS_BIT      = (5);
+constexpr uint16_t I2C_SLV4_MST_DELAY_BIT    = (4);  // [4:0]
+constexpr uint16_t I2C_SLV4_MST_DELAY_LENGTH = (5);
+//------------------------------------------------------------------------------
+constexpr uint16_t I2C_SLV4_DI = (ICM20948_BANK_3 | 0x17);  // [7:0]
+//------------------------------------------------------------------------------
+constexpr uint16_t I2C_MST_STATUS               = (ICM20948_BANK_0 | 0x17);
+constexpr uint16_t I2CMST_STAT_PASS_THROUGH_BIT = (7);
+constexpr uint16_t I2CMST_STAT_SLV4_DONE_BIT    = (6);
+constexpr uint16_t I2CMST_STAT_LOST_ARB_BIT     = (5);
+constexpr uint16_t I2CMST_STAT_SLV4_NACK_BIT    = (4);
+constexpr uint16_t I2CMST_STAT_SLV3_NACK_BIT    = (3);
+constexpr uint16_t I2CMST_STAT_SLV2_NACK_BIT    = (2);
+constexpr uint16_t I2CMST_STAT_SLV1_NACK_BIT    = (1);
+constexpr uint16_t I2CMST_STAT_SLV0_NACK_BIT    = (0);
+//------------------------------------------------------------------------------
+constexpr uint16_t INT_PIN_CONFIG                = (ICM20948_BANK_0 | 0x0F);
+constexpr uint16_t INT_CFG_LEVEL_BIT             = (7);
+constexpr uint16_t INT_CFG_OPEN_BIT              = (6);
+constexpr uint16_t INT_CFG_LATCH_EN_BIT          = (5);
+constexpr uint16_t INT_CFG_ANYRD_2CLEAR_BIT      = (4);
+constexpr uint16_t INT_CFG_FSYNC_LEVEL_BIT       = (3);
+constexpr uint16_t INT_CFG_FSYNC_INT_MODE_EN_BIT = (2);
+constexpr uint16_t INT_CFG_I2C_BYPASS_EN_BIT     = (1);
+constexpr uint16_t INT_CFG_CLOCKOUT_EN_BIT       = (0);
+//------------------------------------------------------------------------------
+constexpr uint16_t INT_ENABLE                   = (ICM20948_BANK_0 | 0x10);
+constexpr uint16_t INT_ENABLE_FREEFALL_BIT      = (7);
+constexpr uint16_t INT_ENABLE_ZEROMOT_BIT       = (5);
+constexpr uint16_t INT_ENABLE_FIFO_OFLOW_BIT    = (4);
+constexpr uint16_t INT_ENABLE_MOTION_BIT        = (3);
+constexpr uint16_t INT_ENABLE_PLL_RDY_BIT       = (2);
+constexpr uint16_t INT_ENABLE_DMP_RDY_BIT       = (1);
+constexpr uint16_t INT_ENABLE_I2C_MST_FSYNC_BIT = (0);
+
+constexpr uint16_t INT_ENABLE_1                 = (ICM20948_BANK_0 | 0x11);
+constexpr uint16_t INT_ENABLE_RAW_DATA_RDY_BIT  = (0+8);
+
+constexpr uint16_t INT_ENABLE_2                 = (ICM20948_BANK_0 | 0x12);
+//constexpr uint16_t INT_ENABLE_FIFO_OFLOW_BIT    = (0+8+8);
+
+constexpr uint16_t INT_ENABLE_3                 = (ICM20948_BANK_0 | 0x13);
+
+//------------------------------------------------------------------------------
+constexpr uint16_t DMP_INT_STATUS   = (0x39);          // UNKNOWN
+constexpr uint16_t DMP_INT_STATUS_0 = (0);
+constexpr uint16_t DMP_INT_STATUS_1 = (1);
+constexpr uint16_t DMP_INT_STATUS_2 = (2);
+constexpr uint16_t DMP_INT_STATUS_3 = (3);
+constexpr uint16_t DMP_INT_STATUS_4 = (4);
+constexpr uint16_t DMP_INT_STATUS_5 = (5);
+//------------------------------------------------------------------------------
+constexpr uint16_t INT_STATUS                  = (ICM20948_BANK_0 | 0x19);// Hard Coded Encoding!!!
+constexpr uint16_t INT_STATUS_FREEFALL_BIT     = (7);
+constexpr uint16_t INT_STATUS_MOTION_BIT       = (6);
+constexpr uint16_t INT_STATUS_ZEROMOT_BIT      = (5);
+constexpr uint16_t INT_STATUS_FIFO_OFLOW_BIT   = (4);
+constexpr uint16_t INT_STATUS_I2C_MST_BIT      = (3);
+constexpr uint16_t INT_STATUS_PLL_RDY_BIT      = (2);
+constexpr uint16_t INT_STATUS_DMP_RDY_BIT      = (1);
+
+constexpr uint16_t INT_STATUS_1                = (ICM20948_BANK_0 | 0x1A);
+constexpr uint16_t INT_STATUS_RAW_DATA_RDY_BIT = (0);
+
+constexpr uint16_t INT_STATUS_3                = (ICM20948_BANK_0 | 0x1B);
+
+constexpr uint16_t INT_STATUS_4                = (ICM20948_BANK_0 | 0x1C);
+//------------------------------------------------------------------------------
+constexpr uint16_t ACCEL_XOUT_H     = (ICM20948_BANK_0 | 0x2D);  // [15:0]
+constexpr uint16_t ACCEL_XOUT_L     = (ICM20948_BANK_0 | 0x2E);
+constexpr uint16_t ACCEL_YOUT_H     = (ICM20948_BANK_0 | 0x2F);  // [15:0]
+constexpr uint16_t ACCEL_YOUT_L     = (ICM20948_BANK_0 | 0x30);
+constexpr uint16_t ACCEL_ZOUT_H     = (ICM20948_BANK_0 | 0x31);  // [15:0]
+constexpr uint16_t ACCEL_ZOUT_L     = (ICM20948_BANK_0 | 0x32);
+constexpr uint16_t TEMP_OUT_H       = (ICM20948_BANK_0 | 0x39);  // [15:0]
+constexpr uint16_t TEMP_OUT_L       = (ICM20948_BANK_0 | 0x3A);
+constexpr uint16_t GYRO_XOUT_H      = (ICM20948_BANK_0 | 0x33);  // [15:0]
+constexpr uint16_t GYRO_XOUT_L      = (ICM20948_BANK_0 | 0x34);
+constexpr uint16_t GYRO_YOUT_H      = (ICM20948_BANK_0 | 0x35);  // [15:0]
+constexpr uint16_t GYRO_YOUT_L      = (ICM20948_BANK_0 | 0x36);
+constexpr uint16_t GYRO_ZOUT_H      = (ICM20948_BANK_0 | 0x37);  // [15:0]
+constexpr uint16_t GYRO_ZOUT_L      = (ICM20948_BANK_0 | 0x38);
+constexpr uint16_t EXT_SENS_DATA_00 = (ICM20948_BANK_0 | 0x3B);  // Stores data read from Slave 0, 1, 2, and 3
+constexpr uint16_t EXT_SENS_DATA_01 = (ICM20948_BANK_0 | 0x3C);
+constexpr uint16_t EXT_SENS_DATA_02 = (ICM20948_BANK_0 | 0x3D);
+constexpr uint16_t EXT_SENS_DATA_03 = (ICM20948_BANK_0 | 0x3E);
+constexpr uint16_t EXT_SENS_DATA_04 = (ICM20948_BANK_0 | 0x3F);
+constexpr uint16_t EXT_SENS_DATA_05 = (ICM20948_BANK_0 | 0x40);
+constexpr uint16_t EXT_SENS_DATA_06 = (ICM20948_BANK_0 | 0x41);
+constexpr uint16_t EXT_SENS_DATA_07 = (ICM20948_BANK_0 | 0x42);
+constexpr uint16_t EXT_SENS_DATA_08 = (ICM20948_BANK_0 | 0x43);
+constexpr uint16_t EXT_SENS_DATA_09 = (ICM20948_BANK_0 | 0x44);
+constexpr uint16_t EXT_SENS_DATA_10 = (ICM20948_BANK_0 | 0x45);
+constexpr uint16_t EXT_SENS_DATA_11 = (ICM20948_BANK_0 | 0x46);
+constexpr uint16_t EXT_SENS_DATA_12 = (ICM20948_BANK_0 | 0x47);
+constexpr uint16_t EXT_SENS_DATA_13 = (ICM20948_BANK_0 | 0x48);
+constexpr uint16_t EXT_SENS_DATA_14 = (ICM20948_BANK_0 | 0x49);
+constexpr uint16_t EXT_SENS_DATA_15 = (ICM20948_BANK_0 | 0x4A);
+constexpr uint16_t EXT_SENS_DATA_16 = (ICM20948_BANK_0 | 0x4B);
+constexpr uint16_t EXT_SENS_DATA_17 = (ICM20948_BANK_0 | 0x4C);
+constexpr uint16_t EXT_SENS_DATA_18 = (ICM20948_BANK_0 | 0x4D);
+constexpr uint16_t EXT_SENS_DATA_19 = (ICM20948_BANK_0 | 0x4E);
+constexpr uint16_t EXT_SENS_DATA_20 = (ICM20948_BANK_0 | 0x4F);
+constexpr uint16_t EXT_SENS_DATA_21 = (ICM20948_BANK_0 | 0x50);
+constexpr uint16_t EXT_SENS_DATA_22 = (ICM20948_BANK_0 | 0x51);
+constexpr uint16_t EXT_SENS_DATA_23 = (ICM20948_BANK_0 | 0x52);
+constexpr uint16_t I2C_SLV0_DO      = (ICM20948_BANK_3 | 0x06);
+constexpr uint16_t I2C_SLV1_DO      = (ICM20948_BANK_3 | 0x0A);
+constexpr uint16_t I2C_SLV2_DO      = (ICM20948_BANK_3 | 0x0E);
+constexpr uint16_t I2C_SLV3_DO      = (ICM20948_BANK_3 | 0x12);
+//------------------------------------------------------------------------------
+constexpr uint16_t I2C_MST_DELAY_CRTL       = (ICM20948_BANK_3 | 0x02);
+constexpr uint16_t I2CMST_DLY_ES_SHADOW_BIT = (7);
+constexpr uint16_t I2CMST_DLY_SLV4_EN_BIT   = (4);
+constexpr uint16_t I2CMST_DLY_SLV3_EN_BIT   = (3);
+constexpr uint16_t I2CMST_DLY_SLV2_EN_BIT   = (2);
+constexpr uint16_t I2CMST_DLY_SLV1_EN_BIT   = (1);
+constexpr uint16_t I2CMST_DLY_SLV0_EN_BIT   = (0);
+//------------------------------------------------------------------------------
+constexpr uint16_t SIGNAL_PATH_RESET   = (0x68);       // UNKNOWN
+constexpr uint16_t SPATH_GYRO_RST_BIT  = (2);
+constexpr uint16_t SPATH_ACCEL_RST_BIT = (1);
+constexpr uint16_t SPATH_TEMP_RST_BIT  = (0);
+//------------------------------------------------------------------------------
+constexpr uint16_t USER_CTRL                   = (ICM20948_BANK_0 | 0x03);
+constexpr uint16_t USERCTRL_DMP_EN_BIT         = (7);
+constexpr uint16_t USERCTRL_FIFO_EN_BIT        = (6);
+constexpr uint16_t USERCTRL_I2C_MST_EN_BIT     = (5);
+constexpr uint16_t USERCTRL_I2C_IF_DIS_BIT     = (4);
+constexpr uint16_t USERCTRL_DMP_RESET_BIT      = (3);
+constexpr uint16_t USERCTRL_FIFO_RESET_BIT     = (2);
+constexpr uint16_t USERCTRL_I2C_MST_RESET_BIT  = (1);
+constexpr uint16_t USERCTRL_SIG_COND_RESET_BIT = (0);
+
+//------------------------------------------------------------------------------
+constexpr uint16_t FIFO_RST                     = (ICM20948_BANK_0 | 0x68);
+constexpr uint16_t FIFO_RESET_BIT               = (4);  // [4:0]
+constexpr uint16_t FIFO_RESET_LENGTH            = (5);
+//------------------------------------------------------------------------------
+constexpr uint16_t LP_CONFIG                    = (ICM20948_BANK_0 | 0x05);
+constexpr uint16_t LP_CONFIG_I2C_MST_CYCLE      = (6);
+constexpr uint16_t LP_CONFIG_ACCEL_CYCLE        = (5);
+constexpr uint16_t LP_CONFIG_GYRO_CYCLE         = (4);
+//------------------------------------------------------------------------------
+constexpr uint16_t PWR_MGMT1             = (ICM20948_BANK_0 | 0x06);
+constexpr uint16_t PWR1_DEVICE_RESET_BIT = (7);
+constexpr uint16_t PWR1_SLEEP_BIT        = (6);
+constexpr uint16_t PWR1_CYCLE_BIT        = (5);
+constexpr uint16_t PWR1_GYRO_STANDBY_BIT = (4);
+constexpr uint16_t PWR1_TEMP_DIS_BIT     = (3);
+constexpr uint16_t PWR1_CLKSEL_BIT       = (2);
+constexpr uint16_t PWR1_CLKSEL_LENGTH    = (3);
+//------------------------------------------------------------------------------
+constexpr uint16_t PWR_MGMT2                = (ICM20948_BANK_0 | 0x07);
+constexpr uint16_t PWR2_LP_WAKE_CTRL_BIT    = (7);
+constexpr uint16_t PWR2_LP_WAKE_CTRL_LENGTH = (2);
+constexpr uint16_t PWR2_STBY_XA_BIT         = (5);
+constexpr uint16_t PWR2_STBY_YA_BIT         = (4);
+constexpr uint16_t PWR2_STBY_ZA_BIT         = (3);
+constexpr uint16_t PWR2_STBY_XG_BIT         = (2);
+constexpr uint16_t PWR2_STBY_YG_BIT         = (1);
+constexpr uint16_t PWR2_STBY_ZG_BIT         = (0);
+constexpr uint16_t PWR2_STBY_XYZA_BITS      = (1 << PWR2_STBY_XA_BIT | 1 << PWR2_STBY_YA_BIT | 1 << PWR2_STBY_ZA_BIT);
+constexpr uint16_t PWR2_STBY_XYZG_BITS      = (1 << PWR2_STBY_XG_BIT | 1 << PWR2_STBY_YG_BIT | 1 << PWR2_STBY_ZG_BIT);
+//------------------------------------------------------------------------------
+constexpr uint16_t BANK_SEL                  = (0x6D);    // UNKNOWN
+constexpr uint16_t BANKSEL_PRFTCH_EN_BIT     = (6);
+constexpr uint16_t BANKSEL_CFG_USER_BANK_BIT = (5);
+constexpr uint16_t BANKSEL_MEM_SEL_BIT       = (4);
+constexpr uint16_t BANKSEL_MEM_SEL_LENGTH    = (5);
+//------------------------------------------------------------------------------
+constexpr uint16_t MEM_START_ADDR = (0x6E);               // UNKNOWN
+constexpr uint16_t MEM_R_W        = (0x6F);
+constexpr uint16_t PRGM_START_H   = (0x70);
+constexpr uint16_t PRGM_START_L   = (0x71);
+constexpr uint16_t FIFO_COUNT_H   = (ICM20948_BANK_0 | 0x70);  // [15:0]
+constexpr uint16_t FIFO_COUNT_L   = (ICM20948_BANK_0 | 0x71);
+constexpr uint16_t FIFO_R_W       = (ICM20948_BANK_0 | 0x72);
+
+//------------------------------------------------------------------------------
+// MPU6500 and MPU9250 registers Compatible Section
+//------------------------------------------------------------------------------
+#if defined CONFIG_MPU6500
+constexpr uint16_t SELF_TEST_X_GYRO  = (ICM20948_BANK_1 | 0x02);  // XG_ST_DATA[7:0]
+constexpr uint16_t SELF_TEST_Y_GYRO  = (ICM20948_BANK_1 | 0x03);  // YG_ST_DATA[7:0]
+constexpr uint16_t SELF_TEST_Z_GYRO  = (ICM20948_BANK_1 | 0x04);  // ZG_ST_DATA[7:0]
+constexpr uint16_t SELF_TEST_X_ACCEL = (ICM20948_BANK_1 | 0x0E);
+constexpr uint16_t SELF_TEST_Y_ACCEL = (ICM20948_BANK_1 | 0x0F);
+constexpr uint16_t SELF_TEST_Z_ACCEL = (ICM20948_BANK_1 | 0x10);
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+constexpr uint16_t LP_ACCEL_ODR          = (0x1E);                //UNKNOWN
+constexpr uint16_t LPA_ODR_CLKSEL_BIT    = (3);  // [3:0]         //UNKNOWN
+constexpr uint16_t LPA_ODR_CLKSEL_LENGTH = (4);                   //UNKNOWN
+//------------------------------------------------------------------------------
+constexpr uint16_t ACCEL_INTEL_CTRL     = (ICM20948_BANK_2 | 0x12);
+constexpr uint16_t ACCEL_INTEL_EN_BIT   = (1);
+constexpr uint16_t ACCEL_INTEL_MODE_BIT = (0);
+//------------------------------------------------------------------------------
+constexpr uint16_t XA_OFFSET_H = (ICM20948_BANK_1 | 0x14);
+constexpr uint16_t XA_OFFSET_L = (ICM20948_BANK_1 | 0x15);
+constexpr uint16_t YA_OFFSET_H = (ICM20948_BANK_1 | 0x17);
+constexpr uint16_t YA_OFFSET_L = (ICM20948_BANK_1 | 0x18);
+constexpr uint16_t ZA_OFFSET_H = (ICM20948_BANK_1 | 0x1A);
+constexpr uint16_t ZA_OFFSET_L = (ICM20948_BANK_1 | 0x1B);
+#endif
+
+/*******************************************************************************
+ * MPU9150 and MPU9250 Magnetometer registers (AK89xx)
+ ******************************************************************************/
+#if defined CONFIG_MPU_AK89xx
+/*! Magnetometer Registers namespace */
+namespace mag
+{
+constexpr uint8_t WHO_I_AM = (0x00);
+constexpr uint8_t INFO     = (0x01);
+//------------------------------------------------------------------------------
+constexpr uint8_t STATUS1              = (0x02);
+constexpr uint8_t STATUS1_DATA_RDY_BIT = (0);
+//------------------------------------------------------------------------------
+constexpr uint8_t HXL = (0x03);
+constexpr uint8_t HXH = (0x04);
+constexpr uint8_t HYL = (0x05);
+constexpr uint8_t HYH = (0x06);
+constexpr uint8_t HZL = (0x07);
+constexpr uint8_t HZH = (0x08);
+//------------------------------------------------------------------------------
+constexpr uint8_t STATUS2              = (0x09);
+constexpr uint8_t STATUS2_OVERFLOW_BIT = (3);
+//------------------------------------------------------------------------------
+constexpr uint8_t CONTROL1             = (0x0A);
+constexpr uint8_t CONTROL1_MODE_BIT    = (3);
+constexpr uint8_t CONTROL1_MODE_LENGTH = (4);
+//------------------------------------------------------------------------------
+constexpr uint8_t ASTC               = (0x0C);
+constexpr uint8_t ASTC_SELF_TEST_BIT = (6);
+//------------------------------------------------------------------------------
+constexpr uint8_t TEST1 = (0x0D);
+constexpr uint8_t TEST2 = (0x0E);
+//------------------------------------------------------------------------------
+constexpr uint8_t I2CDIS               = (0x0F);
+constexpr uint8_t I2CDIS_DISABLE_VALUE = (0x1B);
+//------------------------------------------------------------------------------
+constexpr uint8_t ASAX = (0x10);
+constexpr uint8_t ASAY = (0x11);
+constexpr uint8_t ASAZ = (0x12);
+
+//------------------------------------------------------------------------------
+// MPU9250 Magnetometer (AK8963) Compatible Section
+//------------------------------------------------------------------------------
+#if defined CONFIG_MPU_AK8963
+constexpr uint16_t STATUS1_DATA_OVERRUN_BIT = (1);
+constexpr uint16_t STATUS2_BIT_OUTPUT_M_BIT = (4);
+constexpr uint16_t CONTROL1_BIT_OUTPUT_BIT  = (4);
+//------------------------------------------------------------------------------
+constexpr uint16_t CONTROL2                = (0x0B);
+constexpr uint16_t CONTROL2_SOFT_RESET_BIT = (0);
+//------------------------------------------------------------------------------
+#endif
+
+/*******************************************************************************
+ * MPU9150 Magnetometer (AK8975)
+ ******************************************************************************/
+#if defined CONFIG_MPU_AK8975
+constexpr uint8_t STATUS2_DATA_ERROR_BIT = (2);
+#endif
+
+
+}  // namespace mag
+#endif  // defined AK89xx
+
+#else
+
+/*******************************************************************************
+ * ALL OTHER MPU's
+ ******************************************************************************/
+
+constexpr uint8_t WHO_AM_I       = (0x75);
+
+/*******************************************************************************
+ * MPU common registers for all models
  ******************************************************************************/
 constexpr uint8_t XG_OFFSET_H = (0x13);
 constexpr uint8_t XG_OFFSET_L = (0x14);
@@ -70,6 +490,7 @@ constexpr uint8_t FIFO_XGYRO_EN_BIT = (6);
 constexpr uint8_t FIFO_YGYRO_EN_BIT = (5);
 constexpr uint8_t FIFO_ZGYRO_EN_BIT = (4);
 constexpr uint8_t FIFO_ACCEL_EN_BIT = (3);
+constexpr uint8_t FIFO_SLV_3_EN_BIT = (8);
 constexpr uint8_t FIFO_SLV_2_EN_BIT = (2);
 constexpr uint8_t FIFO_SLV_1_EN_BIT = (1);
 constexpr uint8_t FIFO_SLV_0_EN_BIT = (0);
@@ -267,7 +688,7 @@ constexpr uint8_t PRGM_START_L   = (0x71);
 constexpr uint8_t FIFO_COUNT_H   = (0x72);  // [15:0]
 constexpr uint8_t FIFO_COUNT_L   = (0x73);
 constexpr uint8_t FIFO_R_W       = (0x74);
-constexpr uint8_t WHO_AM_I       = (0x75);
+// #endif
 
 /*******************************************************************************
  * MPU6000, MPU6050 and MPU9150 registers
@@ -405,9 +826,10 @@ constexpr uint8_t CONTROL2                = (0x0B);
 constexpr uint8_t CONTROL2_SOFT_RESET_BIT = (0);
 //------------------------------------------------------------------------------
 #endif
-
 }  // namespace mag
 #endif  // defined AK89xx
+
+#endif
 
 }  // namespace regs
 

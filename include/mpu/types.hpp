@@ -107,7 +107,7 @@ typedef enum {
     LP_ACCEL_RATE_5HZ    = 1,
     LP_ACCEL_RATE_20HZ   = 2,
     LP_ACCEL_RATE_40HZ   = 3
-#elif defined CONFIG_MPU6500 || defined CONFIG_MPU9250
+#elif defined CONFIG_MPU6500 || defined CONFIG_MPU9250 || CONFIG_ICM20948
     LP_ACCEL_RATE_0_24HZ  = 0,
     LP_ACCEL_RATE_0_49HZ  = 1,
     LP_ACCEL_RATE_0_98HZ  = 2,
@@ -150,7 +150,7 @@ typedef struct
 {
     uint8_t threshold; /**< Motion threshold in LSB.
                         * For MPU6000 / MPU6050 / MPU9150: 1LSB = 32mg, 255LSB = 8160mg.
-                        * For MPU6500 / MPU9250: 1LSB = 4mg, 255LSB = 1020mg. */
+                        * For MPU6500 / MPU9250 / ICM20948: 1LSB = 4mg, 255LSB = 1020mg. */
 #if defined CONFIG_MPU6000 || defined CONFIG_MPU6050 || defined CONFIG_MPU9150
     uint8_t time;               /**< Duration in milliseconds that the accel data must exceed
                                  * the threshold before motion is reported. MAX = 255ms. */
@@ -363,7 +363,11 @@ typedef struct
  * @brief Enable features to generate signal at Interrupt pin
  * @note Freefall and zero motion only available to MPU6000 / MPU6050 / MPU9150
  * */
+#if defined CONFIG_ICM20948 
+typedef uint32_t int_en_t;
+#else
 typedef uint8_t int_en_t;
+#endif
 static constexpr int_en_t INT_EN_NONE          = (0x0);
 static constexpr int_en_t INT_EN_MOTION_DETECT = (1 << regs::INT_ENABLE_MOTION_BIT);
 static constexpr int_en_t INT_EN_FIFO_OVERFLOW = (1 << regs::INT_ENABLE_FIFO_OFLOW_BIT);
@@ -416,7 +420,7 @@ static constexpr fifo_config_t FIFO_CFG_TEMPERATURE = (1 << regs::FIFO_TEMP_EN_B
 static constexpr fifo_config_t FIFO_CFG_SLAVE0      = (1 << regs::FIFO_SLV_0_EN_BIT);
 static constexpr fifo_config_t FIFO_CFG_SLAVE1      = (1 << regs::FIFO_SLV_1_EN_BIT);
 static constexpr fifo_config_t FIFO_CFG_SLAVE2      = (1 << regs::FIFO_SLV_2_EN_BIT);
-static constexpr fifo_config_t FIFO_CFG_SLAVE3      = (1 << 8);
+static constexpr fifo_config_t FIFO_CFG_SLAVE3      = (1 << regs::FIFO_SLV_3_EN_BIT);
 #if defined CONFIG_MPU_AK89xx
 static constexpr fifo_config_t FIFO_CFG_COMPASS = (FIFO_CFG_SLAVE0);  // 8 bytes
 #endif
