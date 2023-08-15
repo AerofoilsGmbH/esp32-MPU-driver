@@ -1,3 +1,5 @@
+// clang-format off
+
 // =========================================================================
 // This library is placed under the MIT License
 // Copyright 2017-2018 Natanael Josue Rabello. All rights reserved.
@@ -297,7 +299,7 @@ typedef struct
  * Note: there is nothing to swap after reading the first byte if `reg_addr[bit 0] = 1`,
  * or if the last byte read has a register address `[bit 0] = 0`. The opposite is true for 'group' = `EVEN_NUM`.
  * */
-typedef struct
+struct auxi2c_slv_config_t
 {
     auxi2c_slv_t slave;  //!< Slave slot
     uint8_t addr : 7;    //!< Slave device address
@@ -320,7 +322,32 @@ typedef struct
         // when writing
         uint8_t txdata;  //!< Data to transfer when slave is set to write.
     };
-} auxi2c_slv_config_t;
+
+    auxi2c_slv_config_t() = default;
+
+    constexpr auxi2c_slv_config_t(auxi2c_slv_t _slave, uint8_t _addr, auxi2c_rw_t _rw, uint8_t _reg_addr,
+                                  bool _reg_dis, bool _sample_delay_en, bool _swap_en, auxi2c_eow_t _end_of_word,
+                                  uint8_t _rxlength)
+        : slave(_slave),
+          addr(_addr),
+          rw(_rw),
+          reg_addr(_reg_addr),
+          reg_dis(_reg_dis),
+          sample_delay_en(_sample_delay_en),
+          swap_en(_swap_en),
+          end_of_word(_end_of_word),
+          rxlength(_rxlength) {}
+
+    constexpr auxi2c_slv_config_t(auxi2c_slv_t _slave, uint8_t _addr, auxi2c_rw_t _rw, uint8_t _reg_addr,
+                                  bool _reg_dis, bool _sample_delay_en, uint8_t _txdata)
+        : slave(_slave),
+          addr(_addr),
+          rw(_rw),
+          reg_addr(_reg_addr),
+          reg_dis(_reg_dis),
+          sample_delay_en(_sample_delay_en),
+          txdata(_txdata) {}
+};
 
 /*! Auxiliary I2C master status register data */
 typedef uint8_t auxi2c_stat_t;

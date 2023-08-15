@@ -1,3 +1,5 @@
+// clang-format off
+
 // =========================================================================
 // This library is placed under the MIT License
 // Copyright 2017-2018 Natanael Josue Rabello. All rights reserved.
@@ -2158,31 +2160,26 @@ esp_err_t MPU::compassSetMode(mag_mode_t mode)
         if (MPU_ERR_CHECK(compassWriteByte(regs::mag::CONTROL1, kControl1Value))) return err;
 
         // slave 0 reads from magnetometer data register
-        const auxi2c_slv_config_t kSlaveReadDataConfig = {
-            .slave           = MAG_SLAVE_READ_DATA,
-            .addr            = COMPASS_I2CADDRESS,
-            .rw              = AUXI2C_READ,
-            .reg_addr        = regs::mag::STATUS1,
-            .reg_dis         = 0,
-            .sample_delay_en = 1,
-            {{
-                .swap_en     = 0,
-                .end_of_word = (auxi2c_eow_t) 0,
-                .rxlength    = 8  //
-            }}                    //
-        };
+        const auxi2c_slv_config_t kSlaveReadDataConfig(MAG_SLAVE_READ_DATA,
+                                                       COMPASS_I2CADDRESS,
+                                                       AUXI2C_READ,
+                                                       regs::mag::STATUS1,
+                                                       0,
+                                                       1,
+                                                       0,
+                                                       (auxi2c_eow_t) 0, 8);
+
         if (MPU_ERR_CHECK(setAuxI2CSlaveConfig(kSlaveReadDataConfig))) return err;
 
         // slave 1 changes mode to single measurement
-        const auxi2c_slv_config_t kSlaveChgModeConfig = {
-            .slave           = MAG_SLAVE_CHG_MODE,
-            .addr            = COMPASS_I2CADDRESS,
-            .rw              = AUXI2C_WRITE,
-            .reg_addr        = regs::mag::CONTROL1,
-            .reg_dis         = 0,
-            .sample_delay_en = 1,
-            {.txdata = kControl1Value}  //
-        };
+        const auxi2c_slv_config_t kSlaveChgModeConfig(MAG_SLAVE_CHG_MODE,
+                                                      COMPASS_I2CADDRESS,
+                                                      AUXI2C_WRITE,
+                                                      regs::mag::CONTROL1,
+                                                      0,
+                                                      1,
+                                                      kControl1Value);
+
         if (MPU_ERR_CHECK(setAuxI2CSlaveConfig(kSlaveChgModeConfig))) return err;
         // enable slaves
         if (MPU_ERR_CHECK(setAuxI2CSlaveEnabled(MAG_SLAVE_CHG_MODE, true))) return err;
